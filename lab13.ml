@@ -63,8 +63,12 @@ might want to add a "rec", or use a different argument list, or no
 argument list at all but binding to an anonymous function instead.)
 ....................................................................*)
 
-let sum _ =
-  failwith "sum not implemented" ;;
+let sum lst =
+  let rec sum_tr lst acc =
+  match lst with
+  | [] -> acc
+  | hd :: tl -> sum_tr tl (hd + acc) in
+  sum_tr lst 0 ;;
 
 (*....................................................................
 Exercise 2: Write a tail-recursive function that finds the product of
@@ -84,16 +88,30 @@ ordering of the lists.
    # prods [1; 2; 3] [1; 2; 3] ;;
    -: int list = [1; 4; 9] *)
 
-let prods _ =
-  failwith "prods not implemented" ;;
+let prods lst1 lst2 =
+  let rec prods_tr lst1 lst2 result =
+    match lst1, lst2 with
+    | [], [] -> result
+    | [], _
+    | _, [] -> raise (Failure "lists are not the same length")
+    | h :: t, hh :: tt -> prods_tr t tt (h * hh :: result) in
+    List.rev (prods_tr lst1 lst2 []) ;;
 
 (*....................................................................
 Exercise 3: Modify your prods function to use option types to deal
 with lists of different lengths.
 ....................................................................*)
 
-let prods_opt _ =
-  failwith "prods not implemented" ;;
+let prods_opt lst1 lst2 =
+  let rec prods_tr lst1 lst2 acc =
+    match lst1, lst2 with
+    | [], [] -> Some acc
+    | [], _
+    | _, []  -> None 
+    | h :: t,  hh  :: tt -> prods_tr t tt (h * hh :: acc) in
+  match prods_tr lst1 lst2 [] with
+  | None -> None
+  | Some x -> Some (List.rev x) ;;
 
 (*....................................................................
 Exercise 4: Finally, combine your sum and prods functions to create a
@@ -102,8 +120,8 @@ of corresponding elements of the lists). (For reference, you
 implemented dot product in lab 2.)
 ....................................................................*)
 
-let dotprod _ =
-  failwith "dotprod not implemented" ;;
+let dotprod lst1 lst2 =
+  sum (prods lst1 lst2) ;;
 
 (*====================================================================
 Part 2: Loops
@@ -129,7 +147,15 @@ For example, we expect the following behavior:
 ....................................................................*)
 
 let odd_while (x : int) : int list =
-  failwith "oddwhile not implemented" ;;
+  let counter = ref 0 in
+  let lstr = ref [] in
+  while !counter < x do
+    counter := succ !counter; 
+    if !counter mod 2 = 1 
+      then lstr := (!lstr @ [!counter])
+    else lstr := !lstr;
+    done; 
+    ! lstr ;;
 
 let odd_for (x : int) : int list =
   failwith "oddfor not implemented" ;;
