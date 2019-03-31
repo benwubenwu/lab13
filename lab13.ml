@@ -158,7 +158,11 @@ let odd_while (x : int) : int list =
     ! lstr ;;
 
 let odd_for (x : int) : int list =
-  failwith "oddfor not implemented" ;;
+  let lst_ref = ref [] in
+  for i = 1 to (x + 1) / 2 do
+    lst_ref := (i - 1) * 2 + 1 :: !lst_ref
+  done;
+  List.rev (!lst_ref) ;;
 
 (* Here is the length function implemented using a while loop, as in
 the reading:
@@ -182,7 +186,13 @@ while loop.
 ....................................................................*)
 
 let sum_iter (lst : int list) : int =
-  failwith "sum_iter not implemented" ;;
+  let sum = ref 0 in
+  let lstr = ref lst in
+  while !lstr <> [] do           
+    sum := List.hd !lstr + !sum; 
+    lstr := List.tl !lstr        
+  done;
+  !sum ;;
 
 (*....................................................................
 Exercise 7: Rewrite the recursive prods function from above using a
@@ -191,7 +201,16 @@ have different lengths.
 ....................................................................*)
 
 let prods_iter (xs : int list) (ys : int list) : int list =
-  failwith "prods_iter not implemented" ;;
+  let a = ref xs in
+  let b = ref ys in
+  let result = ref [] in
+  while (!a <> []) && (!b <> []) do
+    result := ((List.hd (!a)) * (List.hd (!b))) :: (!result);
+    a := List.tl (!a);
+    b := List.tl (!b);
+  done;
+  if !a = [] && !b = [] then List.rev (!result)
+  else failwith "prods_iter: lists of different length" ;;
 
 (* You've now implemented prods a few times, so think about which of
 them you think is the most efficient, and which of them required the
@@ -214,7 +233,13 @@ List.rev, and you've likely used it in previous exercises.)
 ....................................................................*)
 
 let reverse (lst : 'a list) : 'a list =
-  failwith "reverse not implemented" ;;
+  let a =  ref lst in
+  let result = ref [] in
+  while !a <> [] do
+    result := List.hd !a :: !result;
+    a := List.tl !a
+  done;
+  !result ;;
 
 (* As you've observed in this lab, procedural programming can be
 useful, but most problems can and should be solved with functional
@@ -244,4 +269,15 @@ than 23.
 ....................................................................*)
 
 let mario (height : int) : unit =
-  failwith "mario not implemented" ;;
+  if height > 23 then
+    raise (Invalid_argument "This pyramid is way too high for Mario")
+  else
+    for line = 0 to (height - 1) do
+      for spaces = 1 to (height - line - 1) do
+        print_string " ";
+      done;
+      for hashes = 1 to (line + 2) do
+        print_string "#";
+      done;
+      print_newline ();
+    done ;;
